@@ -1,11 +1,11 @@
 import run from "aocrunner"
 
 type Direction = 'forward' | 'down' | 'up'
-interface Sub {
+interface Sub1 {
   position: number
   depth: number
 }
-interface Sub2 extends Sub {
+interface Sub2 extends Sub1 {
   aim: number
 }
 class SubCommand {
@@ -20,19 +20,19 @@ class SubCommand {
 
 const parseInput = (rawInput: string) => rawInput.split('\n').map(v => new SubCommand(v))
 
-const funcs: Record<Direction,(p: Sub, d: number)=>void> = {
-  'forward': (p: Sub, d: number) => {
+const subComputer1: Record<Direction,(p: Sub1, d: number)=>void> = {
+  'forward': (p: Sub1, d: number) => {
     p.position += d
   },
-  'down': (p: Sub, d: number) => {
+  'down': (p: Sub1, d: number) => {
     p.depth += d
   },
-  'up': (p: Sub, d: number) => {
+  'up': (p: Sub1, d: number) => {
     p.depth -= d
   },
 }
 
-const funcs2: Record<Direction,(p: Sub2, d: number)=>void> = {
+const subComputer2: Record<Direction,(p: Sub2, d: number)=>void> = {
   'forward': (p: Sub2, d: number) => {
     p.position += d
     p.depth += p.aim * d
@@ -47,15 +47,15 @@ const funcs2: Record<Direction,(p: Sub2, d: number)=>void> = {
 
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput)
-  const sub: Sub = { position: 0, depth: 0 }
-  input.forEach(c => funcs[c.direction](sub, c.distance))
+  const sub: Sub1 = { position: 0, depth: 0 }
+  input.forEach(c => subComputer1[c.direction](sub, c.distance))
   return sub.position * sub.depth
 }
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput)
   const sub: Sub2 = { position: 0, depth: 0, aim: 0 }
-  input.forEach(c => funcs2[c.direction](sub, c.distance))
+  input.forEach(c => subComputer2[c.direction](sub, c.distance))
   return sub.position * sub.depth
 }
 
