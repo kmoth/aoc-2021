@@ -21,7 +21,7 @@ function getDecimal(input: number[], halfLength: number, bits: number[]) {
   return parseInt(binary.join(''), 2)
 }
 
-function doTheThing({ 
+function findRating({ 
   input, 
   set, 
   bitIndex, 
@@ -35,7 +35,7 @@ function doTheThing({
   const binary = getBinary(counts, halfLength, set)
   input = input.filter(c => c[bitIndex] === binary[bitIndex])
   return input.length > 1 
-    ? doTheThing({ input, set, bitIndex: bitIndex + 1 }) 
+    ? findRating({ input, set, bitIndex: bitIndex + 1 }) 
     : input[0]
 }
 
@@ -53,8 +53,8 @@ const part2 = (rawInput: string) => {
   const input = parseInput(rawInput)
   const o2Data = { input, bitIndex: 0, set: [1, 0] }
   const co2Data = { input, bitIndex: 0, set: [0, 1] }
-  const o2Result = doTheThing(o2Data)
-  const co2Result = doTheThing(co2Data)
+  const o2Result = findRating(o2Data)
+  const co2Result = findRating(co2Data)
   const o2Rating = parseInt(o2Result.join(''), 2)
   const co2Rating = parseInt(co2Result.join(''), 2)
   return o2Rating * co2Rating
