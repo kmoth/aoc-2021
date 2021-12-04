@@ -44,13 +44,13 @@
           "3000884",
           "719624"
         ],
-        "time": 2.4
+        "time": 2.5
       },
       "part2": {
-        "solved": false,
-        "result": null,
+        "solved": true,
+        "result": "4267809",
         "attempts": [],
-        "time": null
+        "time": 4.62
       }
     },
     {
