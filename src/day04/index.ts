@@ -1,10 +1,55 @@
 import run from "aocrunner"
 
-const parseInput = (rawInput: string) => rawInput
+type BingoCard = {
+  numbers: string[]
+  marks: boolean[]
+}
+
+const parseInput = (rawInput: string): { callNumbers: string[], cards: BingoCard[] } => {
+  const lines = rawInput.split(/\r?\n/)
+  const callNumbers = lines[0].split(',')
+  const cards = []
+  let line = 2
+  while(line < lines.length) {
+    let i
+    const card: BingoCard = {
+      numbers: [],
+      marks: [],
+    }
+    for(i = 0; i < 5; i++ ) {
+      const lineNumbers = lines[line + i].trim().split(/\s+/)
+      card.numbers = card.numbers.concat(lineNumbers)
+    }
+    cards.push(card)
+    line += i + 1
+  }
+  return { callNumbers, cards }
+}
+
+const hasWin = (card: BingoCard) => {
+  let ind
+  for(let i = 0; i < card.numbers.length; i++) {
+    if (card.marks[i] === true) {
+      ind = i
+
+    }
+  }
+}
 
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput)
-
+  let currentNumberIndex = 0
+  const currentCard = input.cards[0]
+  while(currentNumberIndex < input.callNumbers.length) {
+    const currentNumber = input.callNumbers[currentNumberIndex]
+    const numberIndex = currentCard.numbers.indexOf(currentNumber)
+    if (numberIndex > -1) {
+      currentCard.marks[numberIndex] = true
+    }
+    hasWin(currentCard)
+    currentNumberIndex++
+  }
+  console.log('marks', currentCard.marks)
   return
 }
 
@@ -50,4 +95,5 @@ run({
     solution: part2,
   },
   trimTestInputs: true,
+  onlyTests: true,
 })
