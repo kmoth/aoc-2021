@@ -27,10 +27,10 @@ const parseInput = (rawInput: string): { callNumbers: string[], cards: BingoCard
 }
 
 const hasWin = (card: BingoCard) => {
-  let ind
-  for(let i = 0; i < card.numbers.length; i++) {
-    if (card.marks[i] === true) {
-      ind = i
+  let firstGood = -1
+  for(let i = 0; i < 5; i++) {
+    if (card.marks[i] === true && firstGood === -1) {
+      firstGood = i
 
     }
   }
@@ -38,16 +38,14 @@ const hasWin = (card: BingoCard) => {
 
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput)
-  let currentNumberIndex = 0
   const currentCard = input.cards[0]
-  while(currentNumberIndex < input.callNumbers.length) {
-    const currentNumber = input.callNumbers[currentNumberIndex]
+  for(let i = 0; i < input.callNumbers.length; i++) {
+    const currentNumber = input.callNumbers[i]
     const numberIndex = currentCard.numbers.indexOf(currentNumber)
     if (numberIndex > -1) {
       currentCard.marks[numberIndex] = true
     }
     hasWin(currentCard)
-    currentNumberIndex++
   }
   console.log('marks', currentCard.marks)
   return
