@@ -18,7 +18,7 @@ class SubCommand {
   }
 }
 
-const parseInput = (rawInput: string) => rawInput.split('\n').map(v => new SubCommand(v))
+const parseInput = (rawInput: string) => rawInput.split(/\r?\n/).map(v => new SubCommand(v))
 
 const subComputer1: Record<Direction,(p: Sub1, d: number)=>void> = {
   'forward': (p: Sub1, d: number) => {

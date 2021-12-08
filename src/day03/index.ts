@@ -1,6 +1,6 @@
 import run from "aocrunner"
 
-const parseInput = (rawInput: string) => rawInput.split('\n').map(v => v.split('').map(v => Number(v)))
+const parseInput = (rawInput: string) => rawInput.split(/\r?\n/).map(v => v.split('').map(v => Number(v)))
 
 function getCounts(input: number[][]): number[] {
   const counts = input[0].map(() => 0)
