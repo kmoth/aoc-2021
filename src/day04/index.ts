@@ -95,16 +95,44 @@ const part1 = (rawInput: string) => {
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput)
+  let numberIndex = undefined
+  let cardIndex = undefined
+  let wins: number[] = []
+  let uniqueWins: number = 0
+  numberLoop:
+  for(let i = 0; i < input.callNumbers.length; i++) {
+    for(let j = 0; j < input.cards.length; j++) {
+      if (markCard(input, i, j)) {
+        if (wins[j] === undefined) {
+          wins[j] = 0
+          uniqueWins += 1
+        }
+        wins[j] += 1
+        if (uniqueWins === input.cards.length) {
+          numberIndex = i
+          cardIndex = j
+          break numberLoop
+        }
+      }
+    }
+  }
+  if (cardIndex !== undefined && numberIndex !== undefined) {
+    const card = input.cards[cardIndex]
+    const tally = []
+    for(let i = 0; i <card.numbers.length; i++) {
+      if (!card.marks[i]) {
+        tally.push(Number(card.numbers[i]))
+      }
+    }
+    const total = tally.reduce((p, c) => p + c)
+    const lastCall = Number(input.callNumbers[numberIndex])
+    return total * lastCall
+  }
 
-  return
+  return 'groargh'
 }
 
-run({
-  part1: {
-    tests: [
-      { 
-        input: 
-`7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+const testInput = `7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 22 13 17 11  0
  8  2 23  4 24
@@ -122,18 +150,27 @@ run({
 10 16 15  9 19
 18  8 23 26 20
 22 11 13  6  5
- 2  0 12  3  7`,
-        expected: 4512
+ 2  0 12  3  7`
+
+run({
+  part1: {
+    tests: [
+      { 
+        input: testInput,
+        expected: 4512,
       },
     ],
     solution: part1,
   },
   part2: {
     tests: [
-      // { input: ``, expected: "" },
+      { 
+        input: testInput, 
+        expected: 1924,
+      },
     ],
     solution: part2,
   },
   trimTestInputs: true,
-  onlyTests: true,
+  onlyTests: false,
 })
