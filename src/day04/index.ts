@@ -5,7 +5,12 @@ type BingoCard = {
   marks: boolean[]
 }
 
-const parseInput = (rawInput: string): { callNumbers: string[], cards: BingoCard[] } => {
+interface Input {
+  callNumbers: string[]
+  cards: BingoCard[]
+}
+
+const parseInput = (rawInput: string): Input => {
   const lines = rawInput.split(/\r?\n/)
   const callNumbers = lines[0].split(',')
   const cards = []
@@ -26,29 +31,66 @@ const parseInput = (rawInput: string): { callNumbers: string[], cards: BingoCard
   return { callNumbers, cards }
 }
 
-const hasWin = (card: BingoCard) => {
-  let firstGood = -1
-  for(let i = 0; i < 5; i++) {
-    if (card.marks[i] === true && firstGood === -1) {
-      firstGood = i
-
+const hasWin = (card: BingoCard, numberIndex: number) => {
+  const hasRow = (card: BingoCard, numberIndex: number) => {
+    const rowIndex = Math.floor(numberIndex / 5) * 5
+    for(let i = 0; i < 5; i++) {
+      if (!card.marks[rowIndex + i]) {
+        return false
+      }
     }
+    return true
   }
+  const hasColumn = (card: BingoCard, numberIndex: number) => {
+    const columnIndex = numberIndex % 5
+    for(let i = 0; i < 5; i++) {
+      if (!card.marks[columnIndex + i * 5]) {
+        return false
+      }
+    }
+    return true
+  }
+  return hasRow(card, numberIndex) || hasColumn(card, numberIndex)
+}
+
+const markCard = (input: Input, callNumberIndex: number, cardIndex: number): boolean => {
+  const currentCard = input.cards[cardIndex]
+  const currentNumber = input.callNumbers[callNumberIndex]
+  const matchIndex = currentCard.numbers.indexOf(currentNumber)
+  if (matchIndex === -1) {
+    return false
+  }
+  currentCard.marks[matchIndex] = true
+  return hasWin(input.cards[cardIndex], matchIndex)
 }
 
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput)
-  const currentCard = input.cards[0]
+  let numberIndex = undefined
+  let cardIndex = undefined
+  numberLoop:
   for(let i = 0; i < input.callNumbers.length; i++) {
-    const currentNumber = input.callNumbers[i]
-    const numberIndex = currentCard.numbers.indexOf(currentNumber)
-    if (numberIndex > -1) {
-      currentCard.marks[numberIndex] = true
+    for(let j = 0; j < input.cards.length; j++) {
+      if (markCard(input, i, j)) {
+        numberIndex = i
+        cardIndex = j
+        break numberLoop
+      }
     }
-    hasWin(currentCard)
   }
-  console.log('marks', currentCard.marks)
-  return
+  if (cardIndex !== undefined && numberIndex !== undefined) {
+    const card = input.cards[cardIndex]
+    const tally = []
+    for(let i = 0; i <card.numbers.length; i++) {
+      if (!card.marks[i]) {
+        tally.push(Number(card.numbers[i]))
+      }
+    }
+    const total = tally.reduce((p, c) => p + c)
+    const lastCall = Number(input.callNumbers[numberIndex])
+    return total * lastCall
+  }
+  return 'barf'
 }
 
 const part2 = (rawInput: string) => {
