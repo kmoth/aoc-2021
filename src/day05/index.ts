@@ -10,6 +10,14 @@ interface Line {
   end: Point
 }
 
+const distance = (a: Point, b: Point): number => {
+  return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
+}
+
+const lineContainsPoint = (line: Line, point: Point): boolean => {
+  return distance(line.start, point) + distance(line.end, point) === distance(line.start, line.end)
+}
+
 const parseInput = (rawInput: string) => {
   const lines: Line[] = []
   rawInput.split(/\r?\n/).map(rawLine => {
@@ -18,53 +26,47 @@ const parseInput = (rawInput: string) => {
     const end = startEnd[1].split(',')
     const startPoint = { x: Number(start[0]), y: Number(start[1]) }
     const endPoint = { x: Number(end[0]), y: Number(end[1]) }
-    const line = { start: startPoint, end: endPoint }
-    if (startPoint.x === endPoint.x || startPoint.y === endPoint.y) {
-      lines.push(line)
-    }
+    lines.push({ start: startPoint, end: endPoint })
   })
   return lines
 }
 
+const generateMarkedField = (input: Line[]): (number |  undefined)[][] => {
+  const field: (number |  undefined)[][] = []
+  input.forEach(line => {
+    const distX = line.end.x - line.start.x
+    const distY = line.end.y - line.start.y
+    const length = Math.max(Math.abs(distX), Math.abs(distY))
+    for(let i = 0; i <= length; i++) {
+      const point = {
+        x: line.start.x + distX * i / length, 
+        y: line.start.y + distY * i / length,
+      }
+      field[point.y] ||= []
+      field[point.y][point.x] = (field[point.y][point.x] || 0) + 1
+    }
+  })
+  return field
+}
+
+const countDensitiesGreaterThan = (field: (number |  undefined)[][], value: number): number | undefined => {
+  return field.flat().reduce((p, c) => c !== undefined && c > value ? (p || 0) + 1 : p, 0)
+}
+
+const filterStraightLines = (line: Line) => {
+  return line.start.x === line.end.x || line.start.y === line.end.y
+}
+
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput)
-  const field: (number |  undefined)[][] = []
-  const vertical: Line[] = []
-  const horizontal: Line[] = []
-  input.forEach(line => {
-    if (line.start.x === line.end.x) {
-      vertical.push(line)
-    } else if (line.start.y === line.end.y){
-      horizontal.push(line)
-    }
-  })
-  vertical.forEach(line => {
-    const start = Math.min(line.start.y, line.end.y)
-    const end = Math.max(line.start.y, line.end.y)
-    for(let i = start; i <= end; i++) {
-      if (field[i] === undefined) {
-        field[i] = []
-      }
-      field[i][line.start.x] = (field[i][line.start.x] || 0) + 1
-    }
-  })
-  horizontal.forEach(line => {
-    const start = Math.min(line.start.x, line.end.x)
-    const end = Math.max(line.start.x, line.end.x)
-    if (field[line.start.y] === undefined) {
-      field[line.start.y] = []
-    }
-    for(let i = start; i <= end; i++) {
-      field[line.start.y][i] = (field[line.start.y][i] || 0) + 1
-    }
-  })
-  return field.flat().reduce((p, c) => c !== undefined && c > 1 ? (p || 0) + 1 : p, 0)
+  const field = generateMarkedField(input.filter(filterStraightLines))
+  return countDensitiesGreaterThan(field, 1)
 }
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput)
-
-  return 'grimace'
+  const field = generateMarkedField(input)
+  return countDensitiesGreaterThan(field, 1)
 }
 
 const testInput = 
@@ -93,7 +95,7 @@ run({
     tests: [
       { 
         input: testInput, 
-        expected: '',
+        expected: 12,
       },
     ],
     solution: part2,

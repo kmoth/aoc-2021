@@ -72,13 +72,13 @@
         "solved": true,
         "result": "5145",
         "attempts": [],
-        "time": 49.261304
+        "time": 66.432532
       },
       "part2": {
-        "solved": false,
-        "result": "grimace",
+        "solved": true,
+        "result": "16518",
         "attempts": [],
-        "time": 0.871365
+        "time": 49.393255
       }
     },
     {
