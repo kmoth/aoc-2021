@@ -10,14 +10,6 @@ interface Line {
   end: Point
 }
 
-const distance = (a: Point, b: Point): number => {
-  return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
-}
-
-const lineContainsPoint = (line: Line, point: Point): boolean => {
-  return distance(line.start, point) + distance(line.end, point) === distance(line.start, line.end)
-}
-
 const parseInput = (rawInput: string) => {
   const lines: Line[] = []
   rawInput.split(/\r?\n/).map(rawLine => {
