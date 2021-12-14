@@ -6,44 +6,43 @@ const parseInput = (rawInput: string): number[] => {
   return rawInput.split(',').map(n => Number(n))
 }
 
-const addFish = (age: number, fishCycles: Group[], count: number): void => {
-  const group = fishCycles.find(c => c.age === age)
+const addFish = (age: number, groups: Group[], count: number): void => {
+  const group = groups.find(c => c.age === age)
   if (group !== undefined) group.count += count
-  else fishCycles.push({ age, count })
+  else groups.push({ age, count })
 }
 
-const fishDay = (fishCycles: Group[]) => {
+const fishDay = (groups: Group[]) => {
   let newFish = 0
-  for(let i = fishCycles.length - 1; i > -1; i--) {
-    fishCycles[i].age--
+  for(let i = groups.length - 1; i > -1; i--) {
+    groups[i].age--
   }
-  for(let i = fishCycles.length - 1; i > -1; i--) {
-    if (fishCycles[i].age === -1) {
-      const group = fishCycles.find(c => c.age === 6)
+  for(let i = groups.length - 1; i > -1; i--) {
+    if (groups[i].age === -1) {
+      const group = groups.find(c => c.age === 6)
+      newFish += groups[i].count
       if (group !== undefined) {
-        group.count += fishCycles[i].count
-        newFish += fishCycles[i].count
-        fishCycles.splice(i, 1)
+        group.count += groups[i].count
+        groups.splice(i, 1)
       } else {
-        fishCycles[i].age = 6
-        newFish += fishCycles[i].count
+        groups[i].age = 6
       }
     }
   }
   if (newFish > 0) {
-    addFish(8, fishCycles, newFish)
+    addFish(8, groups, newFish)
   }
 }
 
 const fishForDays = (fish: number[], days: number) => {
-  const fishCycles: Group[] = []
+  const groups: Group[] = []
   for(let i = 0; i < fish.length; i++) {
-    addFish(fish[i], fishCycles, 1)
+    addFish(fish[i], groups, 1)
   }
   for(let i = 0; i < days; i++) {
-    fishDay(fishCycles)
+    fishDay(groups)
   }
-  return fishCycles.reduce((p, c) => p + c.count, 0)
+  return groups.reduce((p, c) => p + c.count, 0)
 }
 
 const part1 = (rawInput: string) => {
