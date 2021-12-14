@@ -2,48 +2,58 @@ import run from "aocrunner"
 
 interface Group { age: number, count: number }
 
-class LinkedList {
-  
+const parseInput = (rawInput: string): number[] => {
+  return rawInput.split(',').map(n => Number(n))
 }
 
-const parseInput = (rawInput: string): Group[] => {
-  const groups: Group[] = []
-  rawInput.split(',').map(n => Number(n)).forEach(age => {
-    const group = groups.find(group => group.age === age)
-    if (group) group.count++
-    else groups.push({ age, count: 1})
-  })
-  return groups
+const addFish = (age: number, fishCycles: Group[], count: number): void => {
+  const group = fishCycles.find(c => c.age === age)
+  if (group !== undefined) group.count += count
+  else fishCycles.push({ age, count })
 }
 
-const fishDay = (groups: Group[]): number => {
+const fishDay = (fishCycles: Group[]) => {
   let newFish = 0
-  for (let groupIndex = 0; groupIndex < groups.length; groupIndex++) {
-    groups[groupIndex].age--
-    if (groups[groupIndex].age === -1) {
-      groups[groupIndex].age = 6
-      newFish++
+  for(let i = fishCycles.length - 1; i > -1; i--) {
+    fishCycles[i].age--
+  }
+  for(let i = fishCycles.length - 1; i > -1; i--) {
+    if (fishCycles[i].age === -1) {
+      const group = fishCycles.find(c => c.age === 6)
+      if (group !== undefined) {
+        group.count += fishCycles[i].count
+        newFish += fishCycles[i].count
+        fishCycles.splice(i, 1)
+      } else {
+        fishCycles[i].age = 6
+        newFish += fishCycles[i].count
+      }
     }
   }
-  return newFish
+  if (newFish > 0) {
+    addFish(8, fishCycles, newFish)
+  }
 }
 
-const fishCycle = (groups: Group[], days: number) => {
-  for (let day = 0; day < days; day++) {
-    const newFish = fishDay(groups)
+const fishForDays = (fish: number[], days: number) => {
+  const fishCycles: Group[] = []
+  for(let i = 0; i < fish.length; i++) {
+    addFish(fish[i], fishCycles, 1)
   }
-  
-  return 
+  for(let i = 0; i < days; i++) {
+    fishDay(fishCycles)
+  }
+  return fishCycles.reduce((p, c) => p + c.count, 0)
 }
 
 const part1 = (rawInput: string) => {
-  const groups = parseInput(rawInput)
-  return fishCycle(groups, 80)
+  const fish = parseInput(rawInput)
+  return fishForDays(fish, 80)
 }
 
 const part2 = (rawInput: string) => {
   let fish = parseInput(rawInput)
-  return fishCycle(fish, 256)
+  return fishForDays(fish, 256)
 }
 
 const testInput = `3,4,3,1,2`
@@ -51,7 +61,7 @@ const testInput = `3,4,3,1,2`
 run({
   part1: {
     tests: [
-      // { input: testInput, expected: 5934 },
+      { input: testInput, expected: 5934 },
     ],
     solution: part1,
   },
@@ -62,5 +72,5 @@ run({
     solution: part2,
   },
   trimTestInputs: true,
-  onlyTests: true,
+  onlyTests: false,
 })
