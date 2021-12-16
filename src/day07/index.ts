@@ -38,15 +38,13 @@ const getLowestCost = (input: number[], range: Range, costCalculation: (input: n
 
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput)
-  const uniqueSet = new Set(input)
-  const range = getRange(uniqueSet)
+  const range = getRange(new Set(input))
   return getLowestCost(input, range, part1CostOfMoving)
 }
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput)
-  const uniqueSet = new Set(input)
-  const range = getRange(uniqueSet)
+  const range = getRange(new Set(input))
   return getLowestCost(input, range, part2CostOfMoving)
 }
 
